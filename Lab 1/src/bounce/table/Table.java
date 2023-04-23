@@ -44,11 +44,11 @@ public class Table {
 		int x = 10;
 		int y = 10;
 
-		// if (Math.random() < 0.5) {
-		// x = new Random().nextInt(this.canvas.getWidth());
-		// } else {
-		// y = new Random().nextInt(this.canvas.getHeight());
-		// }
+		if (Math.random() < 0.5) {
+			x = new Random().nextInt(this.canvas.getWidth());
+		} else {
+			y = new Random().nextInt(this.canvas.getHeight());
+		}
 
 		Ball ball = new Ball(color, this.canvas, x, y);
 		ball.addOnMoveHandler(new Handler<Ball>() {

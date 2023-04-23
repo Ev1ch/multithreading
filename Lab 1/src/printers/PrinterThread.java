@@ -17,6 +17,7 @@ public class PrinterThread extends Thread {
   public void run() {
     for (int i = 0; i < LINES_NUMBER; i++) {
       for (int j = 0; j < LINE_LENGTH; j++) {
+        // printer.print();
         syncer.then(permission, new Runnable() {
           @Override
           public void run() {

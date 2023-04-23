@@ -1,14 +1,8 @@
 package bounce.table;
 
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Timer;
 
 import bounce.balls.Ball;
 import bounce.balls.BallThread;
@@ -46,8 +40,8 @@ public class TableThread extends Thread {
 
 	@Override
 	public void run() {
-		// threads.values().forEach(ballThread -> {
-		// ballThread.start();
-		// });
+		threads.values().forEach(ballThread -> {
+			ballThread.start();
+		});
 	}
 }

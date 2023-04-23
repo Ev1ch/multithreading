@@ -6,6 +6,9 @@ public class BallThread extends Thread {
 
   public BallThread(Ball ball) {
     b = ball;
+
+    setPriority(b.getColor() == BallColor.RED ? Thread.MAX_PRIORITY
+        : Thread.MIN_PRIORITY);
   }
 
   @Override
@@ -14,6 +17,7 @@ public class BallThread extends Thread {
     int i = 0;
     try {
       while (i < 100) {
+        // while (!isEnded) {
         b.move();
         System.out.println("Thread name = "
             + Thread.currentThread().getName());
