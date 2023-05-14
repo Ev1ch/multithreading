@@ -1,4 +1,5 @@
 public class Singer implements Runnable {
+  public static final int SONGS_NUMBER = 10000;
   private final Album album;
 
   public Singer(Album album) {
@@ -7,14 +8,10 @@ public class Singer implements Runnable {
 
   @Override
   public void run() {
-    try {
-      for (int i = 0; i < 100; i++) {
-        album.put(i);
-        System.out.println("PRODUCER: Sent value " + i);
-        Thread.sleep(1000);
-      }
-    } catch (InterruptedException e) {
-      System.out.println("ERROR: Producer.java line 14");
+    for (int i = 1; i <= SONGS_NUMBER; i++) {
+      album.put(i);
     }
+
+    album.put(-1);
   }
 }

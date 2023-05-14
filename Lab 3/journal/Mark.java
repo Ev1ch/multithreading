@@ -1,4 +1,3 @@
-
 public class Mark {
   private double value;
 

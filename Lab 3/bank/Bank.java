@@ -1,4 +1,4 @@
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -7,6 +7,7 @@ class Bank {
   private final int[] accounts;
   private long ntransacts = 0;
   private final Lock locker = new ReentrantLock();
+  private final Condition notEmpty = locker.newCondition();
 
   public Bank(int n, int initialBalance) {
     accounts = new int[n];
@@ -15,24 +16,35 @@ class Bank {
       accounts[i] = initialBalance;
     ntransacts = 0;
   }
-  // public void transfer(int from, int to, int amount) {
-  // accounts[from] -= amount;
-  // accounts[to] += amount;
-  // ntransacts++;
-  // if (ntransacts % NTEST == 0)
-  // test();
-  // }
 
   public synchronized void transferSync(int from, int to, int amount) {
+    while (accounts[from] < amount) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     accounts[from] -= amount;
     accounts[to] += amount;
     ntransacts++;
+    notifyAll();
+
     if (ntransacts % NTEST == 0)
       test();
   }
 
   public void transferSyncBlock(int from, int to, int amount) {
     synchronized (this) {
+      while (accounts[from] < amount) {
+        try {
+          wait();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
       accounts[from] -= amount;
       accounts[to] += amount;
       ntransacts++;
@@ -43,10 +55,20 @@ class Bank {
 
   public void transferLocker(int from, int to, int amount) {
     locker.lock();
+
     try {
+      while (accounts[from] < amount) {
+        try {
+          notEmpty.await();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
       accounts[from] -= amount;
       accounts[to] += amount;
       ntransacts++;
+      notEmpty.signalAll();
       if (ntransacts % NTEST == 0)
         test();
     } finally {

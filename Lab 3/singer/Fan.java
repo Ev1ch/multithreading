@@ -7,14 +7,10 @@ public class Fan implements Runnable {
 
   @Override
   public void run() {
-    try {
-      while (true) {
-        int value = album.take();
-        System.out.println("CONSUMER: got value " + value);
-        Thread.sleep(1000);
-      }
-    } catch (InterruptedException e) {
-      System.out.println("ERROR: Consumer.java line 14");
+    var song = album.take();
+
+    while (song != -1) {
+      song = album.take();
     }
   }
 }

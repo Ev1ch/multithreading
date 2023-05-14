@@ -1,12 +1,9 @@
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import journal.Mark;
 
 public class Journal {
   public final Mark MINIMUM_MARK;
@@ -32,6 +29,7 @@ public class Journal {
 
   public void addGroup(Group group) {
     lock.lock();
+
     try {
       groups.add(group);
 

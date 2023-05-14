@@ -1,36 +1,17 @@
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
-  public static final int SINGERS_NUMBER = 2;
-  public static final int FANS_NUMBER = 2;
+  public static void main(String[] args) throws InterruptedException {
+    var album = new Album();
 
-  public static void main(String[] args) {
-    Album album = new Album();
-    List<Thread> threads = new ArrayList<>();
+    var singer = new Thread(new Singer(album));
+    var fan = new Thread(new Fan(album));
 
-    Runnable singer = new Singer(album);
-    Runnable fan = new Fan(album);
+    singer.start();
+    fan.start();
+    singer.join();
+    fan.join();
 
-    for (int i = 0; i < SINGERS_NUMBER; i++) {
-      threads.add(new Thread(singer));
-    }
-
-    for (int i = 0; i < FANS_NUMBER; i++) {
-      threads.add(new Thread(fan));
-
-    }
-
-    for (var thread : threads) {
-      thread.start();
-    }
-
-    try {
-      for (var thread : threads) {
-        thread.join();
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+    System.out.println("PRODUCER: " + (album.producedMessagesNumber - 1) + " songs produced");
+    System.out.println("CONSUMER: " + (album.consumedMessagesNumber - 1) + " songs consumed");
   }
 }
