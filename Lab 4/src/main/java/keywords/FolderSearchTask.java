@@ -24,18 +24,18 @@ class FolderSearchTask extends RecursiveTask<Map<String, Map<String, Long>>> {
         List<RecursiveTask<Map<String, Map<String, Long>>>> forks = new LinkedList<>();
 
         for (var subFolder : folder.getSubFolders()) {
-            FolderSearchTask task = new FolderSearchTask(subFolder, this.keywords);
+            var task = new FolderSearchTask(subFolder, this.keywords);
             forks.add(task);
             task.fork();
         }
 
         for (var document : folder.getDocuments()) {
-            DocumentSearchTask task = new DocumentSearchTask(document, this.keywords);
+            var task = new DocumentSearchTask(document, this.keywords);
             forks.add(task);
             task.fork();
         }
 
-        Map<String, Map<String, Long>> foundKeywords = new HashMap<String, Map<String, Long>>();
+        var foundKeywords = new HashMap<String, Map<String, Long>>();
         for (var fork : forks) {
             foundKeywords.putAll(fork.join());
         }
