@@ -1,5 +1,9 @@
 package cafe;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import cafe.entities.Statistic;
@@ -7,19 +11,24 @@ import cafe.entities.Statistic;
 public class Monitoring extends Thread {
   private static final int DEFAULT_DELAY = 1_000;
 
-  private final Callable<Statistic> getStatistic;
+  private final List<Callable<Statistic>> getStatistics;
+  private Map<Callable<Statistic>, Integer> queuesSizesSums;
   private int iterationsNumber = 0;
-  private int queuesSizesSum = 0;
   private boolean isEnded = false;
   private int delay;
 
-  public Monitoring(Callable<Statistic> getStatistic) {
-    this(getStatistic, DEFAULT_DELAY);
+  public Monitoring() {
+    this(DEFAULT_DELAY);
   }
 
-  public Monitoring(Callable<Statistic> getStatistic, int delay) {
-    this.getStatistic = getStatistic;
+  public Monitoring(int delay) {
     this.delay = delay;
+    queuesSizesSums = new HashMap<>();
+    getStatistics = new ArrayList<>();
+  }
+
+  public void addResource(Callable<Statistic> getStatistic) {
+    this.getStatistics.add(getStatistic);
   }
 
   public void end() {
@@ -30,19 +39,38 @@ public class Monitoring extends Thread {
   public void run() {
     while (!isEnded) {
       try {
-        var statistic = getStatistic.call();
         iterationsNumber++;
-        queuesSizesSum += statistic.getQueueSize();
+        var statistics = new ArrayList<Statistic>();
 
-        System.out.println("Iteration: " + iterationsNumber + ", " + statistic.getName());
-        System.out.println("Failed orders: " + statistic.getFailedOrdersNumber() +
-            ", " + statistic.getOrderFailureProbability() * 100 + "%");
-        System.out.println("Serviced orders: " + statistic.getServedOrdersNumber() +
-            ", " + statistic.getOrderSuccessProbability() * 100 + "%");
-        System.out.println(
-            "Queue size: " + statistic.getQueueSize() + "/" + statistic.getMaxQueueSize() + ", average: "
-                + getAverageQueueSize());
+        System.out.println("Iteration " + iterationsNumber + ":");
         System.out.println();
+
+        for (var i = 0; i < getStatistics.size(); i++) {
+          var getStatistic = getStatistics.get(i);
+          var statistic = getStatistic.call();
+
+          if (!queuesSizesSums.containsKey(getStatistic)) {
+            queuesSizesSums.put(getStatistic, statistic.getQueueSize());
+          } else {
+            queuesSizesSums.put(getStatistic, queuesSizesSums.get(getStatistic) + statistic.getQueueSize());
+          }
+
+          var queuesSizesSum = queuesSizesSums.get(getStatistic);
+          statistics.add(statistic);
+
+          System.out.println(statistic);
+          System.out.println(
+              "Queue size average: "
+                  + queuesSizesSum / (float) iterationsNumber);
+
+          System.out.println();
+        }
+
+        System.out.println(Statistic.getAverage(statistics));
+        System.out.println(
+            "Queue size average: " + getQueueSizesAverage());
+
+        System.out.println("--------------------------------------------------");
 
         Thread.sleep(delay);
       } catch (Exception exception) {
@@ -51,7 +79,13 @@ public class Monitoring extends Thread {
     }
   }
 
-  private float getAverageQueueSize() {
-    return queuesSizesSum / (float) iterationsNumber;
+  private float getQueueSizesAverage() {
+    var queuesSizesAveragesSum = 0f;
+
+    for (var queuesSizesSum : queuesSizesSums.values()) {
+      queuesSizesAveragesSum += queuesSizesSum / (float) iterationsNumber;
+    }
+
+    return queuesSizesAveragesSum / queuesSizesSums.size();
   }
 }

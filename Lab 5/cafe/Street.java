@@ -11,7 +11,6 @@ public class Street extends Thread {
 
   private final int cafeTimeToWork;
   private final Cafe cafe;
-  private final Monitoring monitoring;
   private final String name;
   private int failedOrders;
   private int servedOrders;
@@ -24,7 +23,6 @@ public class Street extends Thread {
     this.name = name;
     this.cafeTimeToWork = cafeTimeToWork;
     cafe = new Cafe();
-    monitoring = new Monitoring(this::getStatistic);
     failedOrders = 0;
     servedOrders = 0;
   }
@@ -35,15 +33,13 @@ public class Street extends Thread {
     cafe.onServedOrder(this::handleServedOrder);
 
     cafe.start();
-    monitoring.start();
 
     Timing.setTimeout(() -> {
       cafe.close();
-      monitoring.end();
     }, cafeTimeToWork);
   }
 
-  private Statistic getStatistic() {
+  public Statistic getStatistic() {
     return new Statistic(name, failedOrders, servedOrders, cafe.getQueueSize(), cafe.getMaximumQueueSize());
   }
 

@@ -1,5 +1,7 @@
 package cafe.entities;
 
+import java.util.List;
+
 public class Statistic {
   private final String name;
   private final int failedOrdersNumber;
@@ -57,5 +59,37 @@ public class Statistic {
     }
 
     return servedOrdersNumber / (float) totalOrdersNumber;
+  }
+
+  public float getQueueFillFactor() {
+    return queueSize / (float) maxQueueSize;
+  }
+
+  @Override
+  public String toString() {
+    return "Statistic: " + name + "\n" +
+        "Failed orders: " + failedOrdersNumber + ", " + getOrderFailureProbability() * 100 + "%\n" +
+        "Served orders: " + servedOrdersNumber + ", " + getOrderSuccessProbability() * 100 + "%\n" +
+        "Queue size: " + queueSize + "/" + maxQueueSize + ", " + getQueueFillFactor() * 100 + "%";
+  }
+
+  public static Statistic getAverage(List<Statistic> statistics) {
+    var maxQueueSize = statistics.get(0).getMaxQueueSize();
+    var failedOrdersNumber = 0;
+    var servedOrdersNumber = 0;
+    var queueSize = 0;
+
+    for (var statistic : statistics) {
+      failedOrdersNumber += statistic.getFailedOrdersNumber();
+      servedOrdersNumber += statistic.getServedOrdersNumber();
+      queueSize += statistic.getQueueSize();
+    }
+
+    return new Statistic(
+        "Average",
+        (int) Math.round(failedOrdersNumber / (double) statistics.size()),
+        (int) Math.round(servedOrdersNumber / (double) statistics.size()),
+        (int) Math.round(queueSize / (double) statistics.size()),
+        maxQueueSize);
   }
 }
