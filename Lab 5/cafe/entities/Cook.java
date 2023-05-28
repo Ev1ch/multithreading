@@ -18,7 +18,7 @@ public class Cook {
   private static final int DEFAULT_DISHES_CAN_BE_COOKED_IN_PARALLEL = DEFAULT_MINIMUM_DISHES_CAN_BE_COOKED_IN_PARALLEL;
   private static final int DEFAULT_COOKING_TIME = 1_000;
   private static final int DEFAULT_MINIMUM_COOKING_TIME = 250;
-  private static final int DEFAULT_MAXIMUM_COOKING_TIME = 800;
+  private static final int DEFAULT_MAXIMUM_COOKING_TIME = 500;
   private static final Map<Dish, Integer> DEFAULT_COOKING_TIMES = getDefaultCookingTimes();
 
   private final int defaultCookingTime;
@@ -60,10 +60,10 @@ public class Cook {
     var cookingTimes = new HashMap<Dish, Integer>();
 
     Menu.getDishes().forEach((dish, price) -> {
-      cookingTimes.put(dish, DEFAULT_MINIMUM_COOKING_TIME);
-      // cookingTimes.put(dish,
-      // Randomization.getRandomNumber(DEFAULT_MINIMUM_COOKING_TIME,
-      // DEFAULT_MAXIMUM_COOKING_TIME));
+      // cookingTimes.put(dish, DEFAULT_MINIMUM_COOKING_TIME);
+      cookingTimes.put(dish,
+          Randomization.getRandomNumber(DEFAULT_MINIMUM_COOKING_TIME,
+              DEFAULT_MAXIMUM_COOKING_TIME));
     });
 
     return cookingTimes;

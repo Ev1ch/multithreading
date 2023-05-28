@@ -68,9 +68,9 @@ public class Cafe extends Thread {
           handleSuccessOrder(order);
         }
 
-        Thread.sleep(minimumDelayBetweenOrder);
-        // Thread.sleep(Randomization.getRandomNumber(minimumDelayBetweenOrder,
-        // maximumDelayBetweenOrder));
+        // Thread.sleep(minimumDelayBetweenOrder);
+        Thread.sleep(Randomization.getRandomNumber(minimumDelayBetweenOrder,
+            maximumDelayBetweenOrder));
       }
     } catch (Exception exception) {
       throw new RuntimeException(exception);

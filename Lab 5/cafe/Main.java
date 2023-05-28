@@ -5,7 +5,7 @@ import java.time.Duration;
 import cafe.utils.Timing;
 
 public class Main {
-  private static final int STREETS_NUMBER = 3;
+  private static final int STREETS_NUMBER = 10;
   private static final int CAFE_TIME_TO_WORK = (int) Duration.ofMinutes(1).toMillis();
 
   public static void main(String[] args) {

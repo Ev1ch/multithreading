@@ -59,16 +59,19 @@ public class Monitoring extends Thread {
           statistics.add(statistic);
 
           System.out.println(statistic);
+          var averageQueueSize = queuesSizesSum / (float) iterationsNumber;
           System.out.println(
               "Queue size average: "
-                  + queuesSizesSum / (float) iterationsNumber);
+                  + averageQueueSize +
+                  ", " + averageQueueSize / statistic.getMaxQueueSize() * 100 + "%");
 
           System.out.println();
         }
 
         System.out.println(Statistic.getAverage(statistics));
         System.out.println(
-            "Queue size average: " + getQueueSizesAverage());
+            "Queue size average: " + getQueueSizesAverage() + ", "
+                + getQueueSizesAverage() / statistics.get(0).getMaxQueueSize() * 100 + "%");
 
         System.out.println("--------------------------------------------------");
 
